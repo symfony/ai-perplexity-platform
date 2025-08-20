@@ -23,7 +23,6 @@ use Symfony\AI\Platform\Result\TextResult;
 use Symfony\AI\Platform\ResultConverterInterface as PlatformResponseConverter;
 use Symfony\Component\HttpClient\Chunk\ServerSentEvent;
 use Symfony\Component\HttpClient\EventSourceHttpClient;
-use Symfony\Component\HttpClient\Exception\JsonException;
 use Symfony\Contracts\HttpClient\ResponseInterface as HttpResponse;
 
 /**
@@ -66,12 +65,7 @@ final class ResultConverter implements PlatformResponseConverter
                 continue;
             }
 
-            try {
-                $data = $chunk->getArrayData();
-            } catch (JsonException) {
-                // try catch only needed for Symfony 6.4
-                continue;
-            }
+            $data = $chunk->getArrayData();
 
             if (isset($data['choices'][0]['delta']['content'])) {
                 yield $data['choices'][0]['delta']['content'];
