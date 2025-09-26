@@ -20,7 +20,7 @@ use Symfony\AI\Platform\Result\RawResultInterface;
 use Symfony\AI\Platform\Result\ResultInterface;
 use Symfony\AI\Platform\Result\StreamResult;
 use Symfony\AI\Platform\Result\TextResult;
-use Symfony\AI\Platform\ResultConverterInterface as PlatformResponseConverter;
+use Symfony\AI\Platform\ResultConverterInterface;
 use Symfony\Component\HttpClient\Chunk\ServerSentEvent;
 use Symfony\Component\HttpClient\EventSourceHttpClient;
 use Symfony\Contracts\HttpClient\ResponseInterface as HttpResponse;
@@ -28,7 +28,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface as HttpResponse;
 /**
  * @author Mathieu Santostefano <msantostefano@proton.me>
  */
-final class ResultConverter implements PlatformResponseConverter
+final class ResultConverter implements ResultConverterInterface
 {
     public function supports(Model $model): bool
     {
