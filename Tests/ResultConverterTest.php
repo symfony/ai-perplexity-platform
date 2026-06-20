@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\AI\Platform\Bridge\Perplexity\ResultConverter;
 use Symfony\AI\Platform\Exception\ExceedContextSizeException;
 use Symfony\AI\Platform\Exception\RuntimeException;
+use Symfony\AI\Platform\Exception\ServerException;
 use Symfony\AI\Platform\Result\ChoiceResult;
 use Symfony\AI\Platform\Result\DeferredResult;
 use Symfony\AI\Platform\Result\InMemoryRawResult;
@@ -215,15 +216,15 @@ final class ResultConverterTest extends TestCase
         $this->assertSame(['https://example.com/1'], $deferredResult->getMetadata()->get('citations'));
     }
 
-    public function testThrowsOnUnhandledHttpErrorStatusBeforeStreaming()
+    public function testThrowsServerExceptionOnServerErrorStatusBeforeStreaming()
     {
         $converter = new ResultConverter();
         $httpResponse = $this->createMock(ResponseInterface::class);
         $httpResponse->method('getStatusCode')->willReturn(500);
         $httpResponse->method('getContent')->willReturn('Service Unavailable');
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Unexpected response code 500');
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('Server error (HTTP 500');
 
         $converter->convert(new RawHttpResult($httpResponse), ['stream' => true]);
     }
