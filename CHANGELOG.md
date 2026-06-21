@@ -5,6 +5,7 @@ CHANGELOG
 ----
 
  * Throw `ServerException` on server errors (HTTP 5xx) instead of a generic `RuntimeException`
+ * Add a `baseUrl` argument to the model client and the factory to target Perplexity-compatible endpoints
  * Raise a `RuntimeException` on unhandled HTTP error statuses before streaming, instead of returning an empty stream
 
 0.10

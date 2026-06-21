@@ -28,12 +28,18 @@ final class ModelClient implements ModelClientInterface
     use JsonBodyEncodingTrait;
 
     private readonly EventSourceHttpClient $httpClient;
+    private readonly string $baseUrl;
 
+    /**
+     * @param string $baseUrl Base URL of a Perplexity-compatible endpoint, with or without a trailing slash
+     */
     public function __construct(
         HttpClientInterface $httpClient,
         #[\SensitiveParameter] private readonly string $apiKey,
+        string $baseUrl = 'https://api.perplexity.ai',
     ) {
         $this->httpClient = $httpClient instanceof EventSourceHttpClient ? $httpClient : new EventSourceHttpClient($httpClient);
+        $this->baseUrl = rtrim($baseUrl, '/');
 
         if ('' === $apiKey) {
             throw new InvalidArgumentException('The API key must not be empty.');
@@ -55,7 +61,7 @@ final class ModelClient implements ModelClientInterface
             throw new InvalidArgumentException(\sprintf('Payload must be an array, but a string was given to "%s".', self::class));
         }
 
-        return new RawHttpResult($this->httpClient->request('POST', 'https://api.perplexity.ai/chat/completions', [
+        return new RawHttpResult($this->httpClient->request('POST', $this->baseUrl.'/chat/completions', [
             'auth_bearer' => $this->apiKey,
             'headers' => ['Content-Type' => 'application/json'],
             'body' => $this->encodeJsonBody(array_merge($options, $payload)),

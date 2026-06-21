@@ -108,6 +108,18 @@ final class ModelClientTest extends TestCase
         $modelClient->request(new Perplexity('sonar'), ['model' => 'sonar', 'messages' => [['role' => 'user', 'content' => 'Hello']]]);
     }
 
+    public function testCustomBaseUrlIsUsedAndTrailingSlashNormalized()
+    {
+        $resultCallback = static function (string $method, string $url): HttpResponse {
+            self::assertSame('https://perplexity.example.com/chat/completions', $url);
+
+            return new MockResponse();
+        };
+        $httpClient = new MockHttpClient([$resultCallback]);
+        $modelClient = new ModelClient($httpClient, 'pplx-api-key', 'https://perplexity.example.com/');
+        $modelClient->request(new Perplexity('sonar'), ['model' => 'sonar', 'messages' => [['role' => 'user', 'content' => 'Hello']]]);
+    }
+
     public function testMalformedUtf8InPayloadDoesNotAbortTheRequest()
     {
         $resultCallback = static function (string $method, string $url, array $options): HttpResponse {
